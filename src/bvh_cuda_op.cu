@@ -803,8 +803,7 @@ void buildBVH(BVHNodePtr<T> internal_nodes, BVHNodePtr<T> leaf_nodes,
 #endif
   // Compute the morton codes for the centroids of all the primitives
   ComputeMortonCodes<T><<<gridSize, blockSize>>>(
-      triangles, num_triangles, scene_bb_ptr,
-      morton_codes.data().get());
+      triangles, num_triangles, scene_bb_ptr, morton_codes.data().get());
 #if PRINT_TIMINGS == 1
   cudaEventRecord(stop);
 #endif

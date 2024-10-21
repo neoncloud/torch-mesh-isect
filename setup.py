@@ -24,6 +24,9 @@ from setuptools import find_packages, setup
 import torch
 from torch.utils.cpp_extension import BuildExtension, CUDAExtension
 
+CONDA_PREFIX = os.getenv('CONDA_PREFIX', '')
+sysroot_path = f'{CONDA_PREFIX}/x86_64-conda-linux-gnu/sysroot'
+
 # Package meta-data.
 NAME = 'mesh_intersection'
 DESCRIPTION = 'PyTorch module for Mesh self intersection detection'
@@ -63,10 +66,11 @@ bvh_include_dirs = torch.utils.cpp_extension.include_paths() + [
 bvh_extra_compile_args = {'nvcc': ['-DPRINT_TIMINGS=0', '-DDEBUG_PRINT=0',
                                    '-DERROR_CHECKING=1',
                                    '-DCOLLISION_ORDERING=1'],
-                          'cxx': []}
+                          'cxx': ['-O2', f'--sysroot={sysroot_path}']}
 bvh_extension = CUDAExtension('bvh_cuda', bvh_src_files,
                               include_dirs=bvh_include_dirs,
-                              extra_compile_args=bvh_extra_compile_args)
+                              extra_compile_args=bvh_extra_compile_args,
+                              extra_link_args=[f'-Wl,--sysroot={sysroot_path}'],)
 
 render_reqs = ['pyrender>=0.1.23', 'trimesh>=2.37.6', 'shapely']
 
